@@ -3,7 +3,6 @@
     <span v-for="block in blocks"
       class="block"
       :style="blockStyle(block)">
-      {{ block }}
     </span>
   </div>
 </template>
@@ -89,7 +88,6 @@ export default {
     },
     shapeS: function (block, orientation) {
       let left = Math.ceil(block / 2) * 40
-      //let top = (Math.floor(block / 2)) * 40
       let top = (Math.floor(block / 2) === 0) ? 40 : 0
       if (orientation === "up" || orientation === "down") {
         left = (Math.floor(block / 2) === 0) ? 40 : 0
