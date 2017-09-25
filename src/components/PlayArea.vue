@@ -5,13 +5,16 @@
       :position="activePiece.pos" 
       :shape="activePiece.shape">
     </piece>
-    <piece
+    <!--piece
       v-for="(p,i) in pieces"
       :key="i"
       :shape="p.shape"
       :position="p.pos"
       :orientation="p.orientation">
-    </piece>
+    </piece-->
+    <played-pieces
+      :pieces="pieces">
+    </played-pieces>
   </div>
 </template>
 
@@ -31,6 +34,7 @@ export default {
           y: 0
         },
         shape: "T",
+        blocks: [],
         orientation: "up",
       },
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
@@ -68,7 +72,6 @@ export default {
       let x = this.activePiece.pos.x
       let vm = this
       this.pieces.forEach(function (v,i) {
-        console.log(v)
         if (v.pos.x === x) {
           b -= v.size.h
         }
@@ -121,7 +124,6 @@ export default {
         this.setPiece()
         this.nextPiece()
       }
-      console.log(this.bottom)
       this.activePiece.pos.y += 1
     },
     moveLateral: function (d) {
@@ -136,8 +138,12 @@ export default {
       this.setPiece()
       this.nextPiece()
     },
+    setPositions: function (p) {
+      this.activePiece.blocks = JSON.parse(JSON.stringify(p))
+    }
   },
   created: function () {
+    this.evtHub.$on("position_changed", this.setPositions)
     window.addEventListener("keydown", this.action)
   },
   components: {

@@ -35,26 +35,40 @@ export default {
   data () {
     return {
       blocks: [0,1,2,3],
+      block_positions: [{},{},{},{}],
     }
   },
   methods: {
     blockStyle: function (block) {
+      let style = {}
       switch (this.shape) {
         case "I":
-          return this.shapeI(block, this.orientation)
+          style = this.shapeI(block, this.orientation)
+          break
         case "O":
-          return this.shapeO(block)
+          style = this.shapeO(block)
+          break
         case "T":
-          return this.shapeT(block, this.orientation)
+          style = this.shapeT(block, this.orientation)
+          break
         case "S":
-          return this.shapeS(block, this.orientation)
+          style = this.shapeS(block, this.orientation)
+          break
         case "Z":
-          return this.shapeZ(block, this.orientation)
+          style = this.shapeZ(block, this.orientation)
+          break 
         case "J":
-          return this.shapeJ(block, this.orientation)
+          style = this.shapeJ(block, this.orientation)
+          break
         case "L":
-          return this.shapeL(block, this.orientation)
+          style = this.shapeL(block, this.orientation)
+          break
       }
+      this.block_positions[block] = style
+      if (block === 3) {
+        this.evtHub.$emit("position_changed", this.block_positions)
+      }
+      return style
     },
     shapeI: function (block, orientation) {
       let top = (orientation === "up" || orientation === "down") ? block * 40 : 0
