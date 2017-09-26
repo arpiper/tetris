@@ -1,21 +1,14 @@
 <template>
   <div id="app">
     <div class="">
-      <!--piece 
-        v-for="(p,i) in pieces"
-        :key="i"
-        :shape="p"
-        :position="{y: 160*i, x: 0}"
-        orientation="up">
-      </piece-->
     </div>
-    <div class="next-piece">
+    <!--div class="next-piece">
       <piece
         orientation="up"
         :position="{x: 20,y: 60}"
         shape="J">
       </piece>
-    </div>
+    </div-->
     <PlayArea></PlayArea>
   </div>
 </template>

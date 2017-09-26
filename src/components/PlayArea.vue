@@ -1,20 +1,37 @@
 <template>
-  <div class="playarea">
-    <piece 
-      :orientation="activePiece.orientation"
-      :position="activePiece.pos" 
-      :shape="activePiece.shape">
-    </piece>
-    <!--piece
-      v-for="(p,i) in pieces"
-      :key="i"
-      :shape="p.shape"
-      :position="p.pos"
-      :orientation="p.orientation">
-    </piece-->
-    <played-pieces
-      :pieces="pieces">
-    </played-pieces>
+  <div class="play-container">
+    <div class="game-data">
+      <div class="next-piece">
+        <piece
+          orientation="up"
+          :position="{x: 20,y: 60}"
+          shape="J">
+        </piece>
+      </div>
+      <div>
+        <span
+          v-for="(a,i) in bottomLine">
+          {{i}} - Left: {{ a.left }} x Top: {{ a.top }}<br />
+        </span>
+      </div>
+    </div>
+    <div class="playarea">
+      <piece 
+        :orientation="activePiece.orientation"
+        :position="activePiece.pos" 
+        :shape="activePiece.shape">
+      </piece>
+      <!--piece
+        v-for="(p,i) in pieces"
+        :key="i"
+        :shape="p.shape"
+        :position="p.pos"
+        :orientation="p.orientation">
+      </piece-->
+      <played-pieces
+        :pieces="pieces">
+      </played-pieces>
+    </div>
   </div>
 </template>
 
@@ -40,6 +57,18 @@ export default {
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
       pieces: [],
       orientations: ["up", "right", "down", "left"],
+      bottomLine: [
+        {top: 800, left: 0},
+        {top: 800, left: 40},
+        {top: 800, left: 80},
+        {top: 800, left: 120},
+        {top: 800, left: 160},
+        {top: 800, left: 200},
+        {top: 800, left: 240},
+        {top: 800, left: 280},
+        {top: 800, left: 320},
+        {top: 800, left: 360},
+      ],
     }
   },
   computed: {
@@ -51,32 +80,32 @@ export default {
         if (this.activePiece.shape === "I") {
           return {w: 40, h: 160}
         }         
-        if (this.activePiece.shape === "T") {
-          return {w: 120, h: 80}
-        }
-        return {w: 80, h: 120}
-      } else {
-        if (this.activePiece.shape === "I") {
-          return {w: 160, h: 40}
-        } else if (this.activePiece.shape === "T") {
+        if (this.activePiece.shape === "Z" || 
+            this.activePiece.shape ===" S") {
           return {w: 80, h: 120}
         }
         return {w: 120, h: 80}
+      } else {
+        if (this.activePiece.shape === "I") {
+          return {w: 160, h: 40}
+        } 
+        if (this.activePiece.shape === "Z" ||
+            this.activePiece.shape === "S") {
+          return {w: 120, h: 80}
+        }
+        return {w: 80, h: 120}
       }
     },
     bottom: function () {
-      if (this.pieces.length === 0) {
-        return 800
-      }
-      let b = 800
-      let x = this.activePiece.pos.x
-      let vm = this
-      this.pieces.forEach(function (v,i) {
-        if (v.pos.x === x) {
-          b -= v.size.h
+      let idx = this.activePiece.pos.x / 40
+      let b = this.bottomLine[idx].top
+      let w = this.pieceSize.w / 40
+      for (var i = 1; i < w; i++) {
+        if (this.bottomLine[idx + i].top < b) { // may need index out of bounds chekcing
+          b = this.bottomLine[idx + i].top
         }
-      })
-      return b
+      }
+      return b 
     }
   },
   methods: {
@@ -95,8 +124,10 @@ export default {
       this.activePiece = JSON.parse(JSON.stringify(p))
     },
     action: function (evt) {
-      evt.preventDefault()
-      evt.stopPropagation()
+      if (["Space", "ArrowUp", "ArrowRight", "ArrowLeft", "ArrowDown"].includes(evt.key)) {
+        evt.preventDefault()
+        evt.stopPropagation()
+      }
       if (evt.key === "Space" || evt.code === "Space" ||
           evt.key === "ArrowUp" || evt.code === "ArrowUp") {
         this.rotate()
@@ -136,16 +167,39 @@ export default {
       }
     },
     quickDown: function () {
-      this.activePiece.pos.y = this.bottom - this.pieceSize.h
-      this.setPiece()
-      this.nextPiece()
+      for (var i = 0; i < 4; i++) {
+        let idx = (this.activePiece.pos.x + parseInt(this.activePiece.blocks[i].left)) / 40
+        this.bottomLine[idx].top -= 40
+      }
+      this.activePiece.pos.y = this.bottom
+      // this.setPiece()
+      // this.nextPiece()
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))
+    },
+    adjustBottom: function (b) {
+      let vm = this
+      b.forEach(function (v) {
+        let idx = parseInt(v.style.left) / 40
+        if (parseInt(v.style.top) < vm.bottomLine[idx].top) { 
+          vm.bottomLine[idx].top = parseInt(v.style.top)
+        }
+      })
+    }
+  },
+  watch: {
+    activePiece: function (value) {
+      console.log(value)
+      if (this.activePiece.pos.y === this.bottom) {
+        this.setPiece()
+        this.nextPiece()
+      }
     }
   },
   created: function () {
     this.evtHub.$on("position_changed", this.setPositions)
+    this.evtHub.$on("adjust_bottom", this.adjustBottom)
     window.addEventListener("keydown", this.action)
   },
   components: {
@@ -156,6 +210,12 @@ export default {
 </script>
 
 <style>
+.play-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
 .playarea {
   position: relative;
   height: 800px;
@@ -164,5 +224,11 @@ export default {
   margin: 10px;
   background-color: white;
   box-sizing: content-box;
+}
+.game-data {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin: 10px;
 }
 </style>

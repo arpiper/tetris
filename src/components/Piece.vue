@@ -101,8 +101,10 @@ export default {
       return {top: `${top}px`, left: `${left}px`}
     },
     shapeS: function (block, orientation) {
+     
+      let top = (Math.floor(block / 2)) * 40
       let left = Math.ceil(block / 2) * 40
-      let top = (Math.floor(block / 2) === 0) ? 40 : 0
+
       if (orientation === "up" || orientation === "down") {
         left = (Math.floor(block / 2) === 0) ? 40 : 0
         top = Math.ceil(block / 2) * 40
@@ -110,8 +112,8 @@ export default {
       return {top: `${top}px`, left: `${left}px`}
     },
     shapeZ: function (block, orientation) {
-      let top = (Math.floor(block / 2)) * 40
       let left = Math.ceil(block / 2) * 40
+      let top = (Math.floor(block / 2) === 0) ? 40 : 0
       if (orientation === "up" || orientation === "down") {
         left = (Math.floor(block / 2)) * 40
         top = Math.ceil(block / 2) * 40

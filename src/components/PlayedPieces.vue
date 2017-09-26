@@ -22,8 +22,8 @@ export default {
   },
   methods: {
     addPiece: function (piece) {
+      let bottom = []
       for (let i = 0; i < 4; i++) {
-        console.log(piece)
         let t = piece.pos.y + parseInt(piece.blocks[i].top)
         let l = piece.pos.x + parseInt(piece.blocks[i].left)
         let b = {
@@ -32,7 +32,9 @@ export default {
           orientation: piece.orientation,
         }
         this.blocks.push(b)
+        bottom.push(b)
       }
+      this.evtHub.$emit("adjust_bottom", bottom)
     },
     getShape: function (s, o) {
 
@@ -40,7 +42,6 @@ export default {
   },
   watch: {
     pieces: function (value) {
-      console.log(value)
       this.addPiece(value[value.length - 1])
     },
   },
