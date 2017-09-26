@@ -95,6 +95,8 @@ export default {
       this.activePiece = JSON.parse(JSON.stringify(p))
     },
     action: function (evt) {
+      evt.preventDefault()
+      evt.stopPropagation()
       if (evt.key === "Space" || evt.code === "Space" ||
           evt.key === "ArrowUp" || evt.code === "ArrowUp") {
         this.rotate()

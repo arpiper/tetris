@@ -23,10 +23,11 @@ export default {
   methods: {
     addPiece: function (piece) {
       for (let i = 0; i < 4; i++) {
-        let t = piece.pos.y
-        let l = piece.pos.x
+        console.log(piece)
+        let t = piece.pos.y + parseInt(piece.blocks[i].top)
+        let l = piece.pos.x + parseInt(piece.blocks[i].left)
         let b = {
-          style: piece.blocks[i],
+          style: {top: `${t}px`, left: `${l}px`},
           shape: piece.shape,
           orientation: piece.orientation,
         }
