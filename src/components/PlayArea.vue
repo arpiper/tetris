@@ -106,6 +106,9 @@ export default {
         }
       }
       return b 
+    },
+    activePieceY: function () {
+      return this.activePiece.pos.y
     }
   },
   methods: {
@@ -167,13 +170,20 @@ export default {
       }
     },
     quickDown: function () {
+      let a = [1, 1, 1, 1]
+      let t = 800
+      let x = -1
       for (var i = 0; i < 4; i++) {
         let idx = (this.activePiece.pos.x + parseInt(this.activePiece.blocks[i].left)) / 40
         this.bottomLine[idx].top -= 40
+        a[i] = this.bottomLine[idx].top
+        if (x !== idx && a[i] < t) {
+          t = a[i]
+        }
+        x = idx
       }
+
       this.activePiece.pos.y = this.bottom
-      // this.setPiece()
-      // this.nextPiece()
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))
@@ -189,9 +199,8 @@ export default {
     }
   },
   watch: {
-    activePiece: function (value) {
-      console.log(value)
-      if (this.activePiece.pos.y === this.bottom) {
+    activePieceY: function (value) {
+      if (value === this.bottom) {
         this.setPiece()
         this.nextPiece()
       }
