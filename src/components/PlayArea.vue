@@ -14,6 +14,14 @@
           {{i}} - Left: {{ a.left }} x Top: {{ a.top }}<br />
         </span>
       </div>
+      <div>
+        {{ lastpiece }}
+        {{ colHeight }}
+      </div>
+      <div class="controls">
+        <button class="start" @click="start">Start</button>
+        <button class="pause" @click="pause">Pause</button>
+      </div>
     </div>
     <div class="playarea">
       <piece 
@@ -69,6 +77,8 @@ export default {
         {top: 800, left: 320},
         {top: 800, left: 360},
       ],
+      lastpiece: undefined,
+      interval: undefined,
     }
   },
   computed: {
@@ -109,12 +119,25 @@ export default {
     },
     activePieceY: function () {
       return this.activePiece.pos.y
+    },
+    colHeight: function () {
+      let c = []
+      for (var i = 0; i < 4; i++) {
+        console.log(this.activePiece)
+        let idx = parseInt(this.activePiece.blocks[i].left) / 40
+        if (c[idx]) {
+          c[idx] += 40
+        } else {
+          c[idx] = 40
+        }
+      }
     }
   },
   methods: {
     setPiece: function () {
       let p = JSON.parse(JSON.stringify(this.activePiece))
       p.size = this.pieceSize
+      this.lastpiece = p
       this.pieces.push(p)
     },
     nextPiece: function () {
@@ -155,12 +178,8 @@ export default {
     },
     move: function (evt) {
     },
-    moveDown: function () {
-      if ((this.activePiece.pos.y + this.pieceSize.h) === this.bottom) {
-        this.setPiece()
-        this.nextPiece()
-      }
-      this.activePiece.pos.y += 1
+    moveDown: function (stepsize = 1) {
+      this.activePiece.pos.y += stepsize
     },
     moveLateral: function (d) {
       if (this.activePiece.pos.x > 0 && d === -1) {
@@ -170,20 +189,11 @@ export default {
       }
     },
     quickDown: function () {
-      let a = [1, 1, 1, 1]
-      let t = 800
-      let x = -1
-      for (var i = 0; i < 4; i++) {
+      /*for (var i = 0; i < 4; i++) {
         let idx = (this.activePiece.pos.x + parseInt(this.activePiece.blocks[i].left)) / 40
         this.bottomLine[idx].top -= 40
-        a[i] = this.bottomLine[idx].top
-        if (x !== idx && a[i] < t) {
-          t = a[i]
-        }
-        x = idx
-      }
-
-      this.activePiece.pos.y = this.bottom
+      }*/
+      this.activePiece.pos.y = this.bottom - this.pieceSize.h
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))
@@ -196,13 +206,24 @@ export default {
           vm.bottomLine[idx].top = parseInt(v.style.top)
         }
       })
+    },
+    start: function () {
+      let stepsize = 1
+      this.interval = window.setInterval(this.moveDown, 50, stepsize)
+    },
+    pause: function () {
+      window.clearInterval(this.interval)
+    },
+    reset: function () {
     }
   },
   watch: {
     activePieceY: function (value) {
-      if (value === this.bottom) {
+      if ((value + this.pieceSize.h) === this.bottom) {
         this.setPiece()
         this.nextPiece()
+        if (this.activePiece) {
+        }
       }
     }
   },
@@ -239,5 +260,26 @@ export default {
   flex-direction: column;
   width: 200px;
   margin: 10px;
+}
+.controls button {
+  width: 75px;
+  height: 25px;
+  margin-top: auto;
+  font-weight: bold;
+  background-color: #4caf50;
+  border: 2px solid #4caf50;
+  padding: 5px;
+}
+.controls button:hover {
+  background-color: white;
+  border: 2px solid #4caf50;
+  cursor: pointer;
+}
+.controls button:active {
+  opacity: 0.5;
+  background-color: #4caf50;
+}
+:focus {
+  outline: none;
 }
 </style>

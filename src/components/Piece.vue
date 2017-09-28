@@ -30,7 +30,7 @@ export default {
         top: `${this.y}px`,
         left: `${this.x}px`,
       }
-    }
+    },
   },
   data () {
     return {
