@@ -35,7 +35,7 @@ export default {
   data () {
     return {
       blocks: [0,1,2,3],
-      block_positions: [{},{},{},{}],
+      block_positions: [],
     }
   },
   methods: {
@@ -65,6 +65,7 @@ export default {
           break
       }
       this.block_positions[block] = style
+      // this.$set(this, "block_positions", style) 
       if (block === 3) {
         this.evtHub.$emit("position_changed", this.block_positions)
       }
@@ -159,6 +160,8 @@ export default {
       return {top: `${top}px`, left: `${left}px`}
     },
   },
+  watch: {
+  }
 }
 </script>
 

@@ -16,7 +16,6 @@
       </div>
       <div>
         {{ lastpiece }}
-        {{ colHeight }}
       </div>
       <div class="controls">
         <button class="start" @click="start">Start</button>
@@ -110,28 +109,19 @@ export default {
       let idx = this.activePiece.pos.x / 40
       let b = this.bottomLine[idx].top
       let w = this.pieceSize.w / 40
+      let x
       for (var i = 1; i < w; i++) {
         if (this.bottomLine[idx + i].top < b) { // may need index out of bounds chekcing
           b = this.bottomLine[idx + i].top
+          x = idx + i
         }
       }
+      console.log("index", x, b)
       return b 
     },
     activePieceY: function () {
       return this.activePiece.pos.y
     },
-    colHeight: function () {
-      let c = []
-      for (var i = 0; i < 4; i++) {
-        console.log(this.activePiece)
-        let idx = parseInt(this.activePiece.blocks[i].left) / 40
-        if (c[idx]) {
-          c[idx] += 40
-        } else {
-          c[idx] = 40
-        }
-      }
-    }
   },
   methods: {
     setPiece: function () {
@@ -189,14 +179,28 @@ export default {
       }
     },
     quickDown: function () {
-      /*for (var i = 0; i < 4; i++) {
-        let idx = (this.activePiece.pos.x + parseInt(this.activePiece.blocks[i].left)) / 40
-        this.bottomLine[idx].top -= 40
-      }*/
-      this.activePiece.pos.y = this.bottom - this.pieceSize.h
+      let cols = this.getColHeight()
+      let idx = (this.activePiece.pos.x) / 40
+      for (var i = 0; i < cols.length; i++) {
+        this.bottomLine[idx + i].top -= cols[i]
+      }
+      console.log(cols)
+      this.activePiece.pos.y = this.bottom //- this.pieceSize.h
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))
+    },
+    getColHeight: function () {
+      let c = []
+      for (var i = 0; i < 4; i++) {
+        let idx = parseInt(this.activePiece.blocks[i].left) / 40
+        if (c[idx]) {
+          c[idx] += 40
+        } else {
+          c[idx] = 40
+        }
+      }
+      return c
     },
     adjustBottom: function (b) {
       let vm = this
@@ -219,7 +223,8 @@ export default {
   },
   watch: {
     activePieceY: function (value) {
-      if ((value + this.pieceSize.h) === this.bottom) {
+      if ((value + this.pieceSize.h) === this.bottom || 
+          value === this.bottom) {
         this.setPiece()
         this.nextPiece()
         if (this.activePiece) {
