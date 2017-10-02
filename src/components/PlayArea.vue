@@ -116,7 +116,7 @@ export default {
           x = idx + i
         }
       }
-      console.log("index", x, b)
+      console.log("Bottom", "index", x, "val", b)
       return b 
     },
     activePieceY: function () {
@@ -181,11 +181,13 @@ export default {
     quickDown: function () {
       let cols = this.getColHeight()
       let idx = (this.activePiece.pos.x) / 40
+      let start = this.bottomLine[idx]
       for (var i = 0; i < cols.length; i++) {
         this.bottomLine[idx + i].top -= cols[i]
       }
-      console.log(cols)
+      console.log("column heights", cols)
       this.activePiece.pos.y = this.bottom //- this.pieceSize.h
+      
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))
