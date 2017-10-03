@@ -34,7 +34,7 @@ export default {
         y = (760 - t) / 40
         n = x + (10 * y)
         if (this.used_spaces.includes(n)) {
-          console.log("piece overlap", n)
+          // console.log("piece overlap", n)
           piece.pos.y -= 40
           conflict = true
           break
@@ -64,10 +64,35 @@ export default {
         this.evtHub.$emit("adjust_bottom", bottom)
       }
     },
+    moveBlocksDown: function (b) {
+      // console.log(b)
+      let vm = this
+      b.forEach(function (v,i) {
+        let j = vm.blocks.indexOf(v)
+        let h = vm.used_spaces.indexOf(vm.blocks[j].number)
+        vm.blocks[j].style.top = `${parseInt(vm.blocks[j].style.top) + 40}px`
+        vm.blocks[j].coordinates[1] -= 1
+        vm.blocks[j].number -= 10
+        vm.used_spaces[h] -= 10
+      })
+      this.evtHub.$emit("row_cleared")
+    },
     getShape: function (s, o) {
     },
-    clearRow: function (row) {
-      console.log("clear row", row)
+    clearRow: function (row, index) {
+      let t = this.used_spaces.splice(index, 10)
+      // console.log("clearrow", row, t)
+      let above = []
+      for (var i = 0; i < this.blocks.length; i++) {
+        if (t.includes(this.blocks[i].number)) {
+          this.blocks.splice(i, 1)
+          i--
+        } else if (this.blocks[i].number > (row * 10 + 9)) {
+          above.push(this.blocks[i])
+        }
+      }
+      this.moveBlocksDown(above)
+      // console.log(above)
     }
   },
   watch: {
@@ -76,11 +101,28 @@ export default {
     },
     used_spaces: function (value) {
       let r = value.length / 10
-      for (var i = 0; i < r; i++) {
+      let count = 0
+      let last = 0
+      /*for (var i = 0; i < r; i++) {
         let idx = (i * 10) + 9
         if (value[idx] === idx) {
           this.clearRow(i)
         }
+      }*/
+      let n = this.used_spaces.length
+      for (var i = 0; i < n; i++) {
+        if (last === value[i] - 1) { // current == prev
+          count++
+          console.log(value[i])
+          if (count === 10) {
+            console.log("row to clear", Math.floor(value[i] / 10))
+            this.clearRow(Math.floor(value[i] / 10), i - 9)
+            count = 0
+          }
+        } else {
+          count = 0
+        }
+        last = value[i]
       }
     },
   },

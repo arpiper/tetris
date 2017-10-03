@@ -3,9 +3,9 @@
     <div class="game-data">
       <div class="next-piece">
         <piece
-          orientation="up"
-          :position="{x: 20,y: 60}"
-          shape="J">
+          :orientation="nextPiece.orientation"
+          :position="nextPiece.pos"
+          :shape="nextPiece.shape">
         </piece>
       </div>
       <div>
@@ -28,13 +28,6 @@
         :position="activePiece.pos" 
         :shape="activePiece.shape">
       </piece>
-      <!--piece
-        v-for="(p,i) in pieces"
-        :key="i"
-        :shape="p.shape"
-        :position="p.pos"
-        :orientation="p.orientation">
-      </piece-->
       <played-pieces
         :pieces="pieces">
       </played-pieces>
@@ -60,6 +53,14 @@ export default {
         shape: "T",
         blocks: [],
         orientation: "up",
+      },
+      nextPiece: {
+        orientaion: "up",
+        pos: {
+          x: 60,
+          y: 20
+        },
+        shape: "O"
       },
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
       pieces: [],
@@ -116,7 +117,7 @@ export default {
           x = idx + i
         }
       }
-      console.log("Bottom", "index", x, "val", b)
+      // console.log("Bottom", "index", x, "val", b)
       return b 
     },
     activePieceY: function () {
@@ -130,7 +131,7 @@ export default {
       this.lastpiece = p
       this.pieces.push(p)
     },
-    nextPiece: function () {
+    getNextPiece: function () {
       let i = Math.floor(Math.random() * this.shapes.length)
       let p = {
         shape: this.shapes[i],
@@ -185,7 +186,7 @@ export default {
       for (var i = 0; i < cols.length; i++) {
         this.bottomLine[idx + i].top -= cols[i]
       }
-      console.log("column heights", cols)
+      // console.log("column heights", cols)
       this.activePiece.pos.y = this.bottom //- this.pieceSize.h
       
     },
@@ -213,6 +214,11 @@ export default {
         }
       })
     },
+    rowCleared: function () {
+      this.bottomLine.forEach(function (v) {
+        v.top += 40
+      })
+    },
     start: function () {
       let stepsize = 1
       this.interval = window.setInterval(this.moveDown, 50, stepsize)
@@ -228,7 +234,7 @@ export default {
       if ((value + this.pieceSize.h) === this.bottom || 
           value === this.bottom) {
         this.setPiece()
-        this.nextPiece()
+        this.getNextPiece()
         if (this.activePiece) {
         }
       }
@@ -237,6 +243,7 @@ export default {
   created: function () {
     this.evtHub.$on("position_changed", this.setPositions)
     this.evtHub.$on("adjust_bottom", this.adjustBottom)
+    this.evtHub.$on("row_cleared", this.rowCleared)
     window.addEventListener("keydown", this.action)
   },
   components: {
