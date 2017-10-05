@@ -113,7 +113,7 @@ export default {
       for (var i = 0; i < n; i++) {
         if (last === value[i] - 1) { // current == prev
           count++
-          console.log(value[i])
+          // console.log(value[i])
           if (count === 10) {
             console.log("row to clear", Math.floor(value[i] / 10))
             this.clearRow(Math.floor(value[i] / 10), i - 9)

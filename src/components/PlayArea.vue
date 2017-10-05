@@ -20,6 +20,7 @@
       <div class="controls">
         <button class="start" @click="start">Start</button>
         <button class="pause" @click="pause">Pause</button>
+        <button class="reset" @click="reset">Reset</button>
       </div>
     </div>
     <div class="playarea">
@@ -46,21 +47,24 @@ export default {
   data () {
     return {
       activePiece: {
-        pos: {
+        /*pos: {
           x: 120,
           y: 0
         },
         shape: "T",
         blocks: [],
         orientation: "up",
+        */
       },
       nextPiece: {
-        orientaion: "up",
-        pos: {
+        /*pos: {
           x: 60,
           y: 20
         },
-        shape: "O"
+        shape: "O",
+        blocks: [],
+        orientaion: "up",
+        */
       },
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
       pieces: [],
@@ -121,7 +125,10 @@ export default {
       return b 
     },
     activePieceY: function () {
-      return this.activePiece.pos.y
+      if (this.activePiece.pos) {
+        return this.activePiece.pos.y
+      }
+      return 0
     },
   },
   methods: {
@@ -131,14 +138,26 @@ export default {
       this.lastpiece = p
       this.pieces.push(p)
     },
-    getNextPiece: function () {
+    getPiece: function () {
       let i = Math.floor(Math.random() * this.shapes.length)
       let p = {
         shape: this.shapes[i],
-        pos: {x: 120, y: 0},
+        pos: {x: 60, y: 40},
         orientation: "up",
+        blocks: [],
       }
-      this.activePiece = JSON.parse(JSON.stringify(p))
+      return p
+    },
+    getNextPiece: function () {
+      let p = this.getPiece()
+      if (["T", "J", "L"].includes(p.shape)) {
+        p.pos.x = 40
+      } else if (p.shape === "I") {
+        p.pos = {x: 80, y: 20}
+      }
+      this.activePiece = JSON.parse(JSON.stringify(this.nextPiece))
+      this.activePiece.pos = {x: 120, y: 0}
+      this.nextPiece = JSON.parse(JSON.stringify(p))
     },
     action: function (evt) {
       if (["Space", "ArrowUp", "ArrowRight", "ArrowLeft", "ArrowDown"].includes(evt.key)) {
@@ -220,6 +239,9 @@ export default {
       })
     },
     start: function () {
+      let p = this.getPiece()
+      p.pos = {x: 120, y: 0}
+      this.activePiece = JSON.parse(JSON.stringify(p))
       let stepsize = 1
       this.interval = window.setInterval(this.moveDown, 50, stepsize)
     },
@@ -227,6 +249,8 @@ export default {
       window.clearInterval(this.interval)
     },
     reset: function () {
+      this.pieces = []
+      this.activePiece = {}
     }
   },
   watch: {
@@ -240,11 +264,20 @@ export default {
       }
     }
   },
+  beforeCreate: function () {
+  },
   created: function () {
     this.evtHub.$on("position_changed", this.setPositions)
     this.evtHub.$on("adjust_bottom", this.adjustBottom)
     this.evtHub.$on("row_cleared", this.rowCleared)
     window.addEventListener("keydown", this.action)
+    let p = this.getPiece()
+    this.nextPiece = JSON.parse(JSON.stringify(p))
+    this.getNextPiece()
+  },
+  destroyed: function () {
+    this.evtHub.$off()
+    window.removeEventListener("keydown", this.action)
   },
   components: {
     Piece,
