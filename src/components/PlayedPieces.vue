@@ -65,7 +65,7 @@ export default {
       }
     },
     moveBlocksDown: function (b) {
-      // console.log(b)
+      console.log("moveBlocksDown", b)
       let vm = this
       b.forEach(function (v,i) {
         let j = vm.blocks.indexOf(v)
@@ -81,7 +81,7 @@ export default {
     },
     clearRow: function (row, index) {
       let t = this.used_spaces.splice(index, 10)
-      // console.log("clearrow", row, t)
+      console.log("clearrow", row, t)
       let above = []
       for (var i = 0; i < this.blocks.length; i++) {
         if (t.includes(this.blocks[i].number)) {
@@ -92,7 +92,6 @@ export default {
         }
       }
       this.moveBlocksDown(above)
-      // console.log(above)
     }
   },
   watch: {
@@ -110,19 +109,29 @@ export default {
         }
       }*/
       let n = this.used_spaces.length
+      let rows = []
+      let indices = []
       for (var i = 0; i < n; i++) {
         if (last === value[i] - 1) { // current == prev
           count++
-          // console.log(value[i])
+          console.log(value[i])
           if (count === 10) {
             console.log("row to clear", Math.floor(value[i] / 10))
-            this.clearRow(Math.floor(value[i] / 10), i - 9)
+            rows.push(Math.floor(value[i] / 10))
+            indices.push(i - 10)
+            //this.clearRow(Math.floor(value[i] / 10), i - 9)
             count = 0
           }
         } else {
           count = 0
         }
         last = value[i]
+      }
+      console.log(rows, indices)
+      if (rows && indices && rows.length === indices.length) {
+        for (i = 0; i < rows.length; i++) {
+          this.clearRow(rows[i], indices[i])
+        }
       }
     },
   },
