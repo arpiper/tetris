@@ -121,7 +121,7 @@ export default {
           x = idx + i
         }
       }
-      // console.log("Bottom", "index", x, "val", b)
+      console.log("Bottom", "index", x, "val", b)
       return b 
     },
     activePieceY: function () {
@@ -205,9 +205,8 @@ export default {
       for (var i = 0; i < cols.length; i++) {
         this.bottomLine[idx + i].top -= cols[i]
       }
-      // console.log("column heights", cols)
+      console.log("column heights", cols)
       this.activePiece.pos.y = this.bottom //- this.pieceSize.h
-      
     },
     setPositions: function (p) {
       this.activePiece.blocks = JSON.parse(JSON.stringify(p))

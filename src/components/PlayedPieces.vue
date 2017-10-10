@@ -99,26 +99,18 @@ export default {
       this.addPiece(value[value.length - 1])
     },
     used_spaces: function (value) {
-      let r = value.length / 10
-      let count = 0
+      let count = (value[i] === 0) ? 1 : 0
       let last = 0
-      /*for (var i = 0; i < r; i++) {
-        let idx = (i * 10) + 9
-        if (value[idx] === idx) {
-          this.clearRow(i)
-        }
-      }*/
       let n = this.used_spaces.length
       let rows = []
       let indices = []
-      for (var i = 0; i < n; i++) {
+      for (var i = 1; i < n; i++) {
         if (last === value[i] - 1) { // current == prev
           count++
-          console.log(value[i])
           if (count === 10) {
-            console.log("row to clear", Math.floor(value[i] / 10))
+            // console.log("row to clear", Math.floor(value[i] / 10), value[i])
             rows.push(Math.floor(value[i] / 10))
-            indices.push(i - 10)
+            indices.push(i - 9)
             //this.clearRow(Math.floor(value[i] / 10), i - 9)
             count = 0
           }
