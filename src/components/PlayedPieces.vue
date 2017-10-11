@@ -92,7 +92,7 @@ export default {
           above.push(this.blocks[i])
         }
       }
-      this.moveBlocksDown(above)
+      window.setTimeout(this.moveBlocksDown(above), 1000)
     }
   },
   watch: {
@@ -100,12 +100,17 @@ export default {
       this.addPiece(value[value.length - 1])
     },
     used_spaces: function (value) {
-      let count = (value[i] === 0) ? 1 : 0
+      let count = 0
       let last = 0
       let n = this.used_spaces.length
       let rows = []
       let indices = []
-      for (var i = 1; i < n; i++) {
+      for (var i = 0; i < n; i++) {
+        if (value[i] % 10 === 0) {
+          count = 1
+          last = value[i]
+          continue
+        }
         if (last === value[i] - 1) { // current == prev
           count++
           if (count === 10) {
@@ -120,7 +125,7 @@ export default {
         }
         last = value[i]
       }
-      console.log(rows, indices)
+      console.log("rows indices", rows, indices)
       if (rows && indices && rows.length === indices.length) {
         for (i = 0; i < rows.length; i++) {
           this.clearRow(rows[i], indices[i])

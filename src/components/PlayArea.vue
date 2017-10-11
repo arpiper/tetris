@@ -96,7 +96,7 @@ export default {
       let idx = this.activePiece.pos.x / 40
       let b = this.bottomLine[idx].top
       let w = this.pieceSize.w / 40
-      console.log("bottom start of computed", "i", idx, "b", b)
+      // console.log("bottom start of computed", "i", idx, "b", b)
       //let x
       for (var i = 0; i < w; i++) { // start at index 0 or 1?
         if (this.bottomLine[idx + i].top < b) { // may need index out of bounds chekcing
@@ -104,7 +104,7 @@ export default {
           //x = idx + i
         }
       }
-      console.log("bottom end of computed", "index", idx, "val", b)
+      // console.log("bottom end of computed", "index", idx, "val", b)
       return b 
     },
     activePieceY: function () {
@@ -183,11 +183,11 @@ export default {
     },
     quickDown: function () {
       let cols = this.getColHeight()
-      console.log("column heights", cols)
+      //console.log("column heights", cols)
       let idx = (this.activePiece.pos.x) / 40
       //let start = this.bottomLine[idx]
       for (var i = 0; i < cols.length; i++) {
-        console.log(this.bottomLine[idx + i].top, cols[i], this.bottomLine[idx + i].top - cols[i])
+        // console.log(this.bottomLine[idx + i].top, cols[i], this.bottomLine[idx + i].top - cols[i])
         this.bottomLine[idx + i].top -= cols[i]
       }
       this.activePiece.pos.y = this.bottom //- this.pieceSize.h
@@ -205,7 +205,7 @@ export default {
           c[idx] = 40
         }
       }
-      console.log("getColHeight", c)
+      // console.log("getColHeight", c)
       return c
     },
     adjustBottom: function (b) {
