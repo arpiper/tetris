@@ -46,26 +46,8 @@ export default {
   },
   data () {
     return {
-      activePiece: {
-        /*pos: {
-          x: 120,
-          y: 0
-        },
-        shape: "T",
-        blocks: [],
-        orientation: "up",
-        */
-      },
-      nextPiece: {
-        /*pos: {
-          x: 60,
-          y: 20
-        },
-        shape: "O",
-        blocks: [],
-        orientaion: "up",
-        */
-      },
+      activePiece: {},
+      nextPiece: {},
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
       pieces: [],
       orientations: ["up", "right", "down", "left"],
@@ -95,7 +77,7 @@ export default {
           return {w: 40, h: 160}
         }         
         if (this.activePiece.shape === "Z" || 
-            this.activePiece.shape ===" S") {
+            this.activePiece.shape === "S") {
           return {w: 80, h: 120}
         }
         return {w: 120, h: 80}
@@ -114,14 +96,15 @@ export default {
       let idx = this.activePiece.pos.x / 40
       let b = this.bottomLine[idx].top
       let w = this.pieceSize.w / 40
-      let x
-      for (var i = 1; i < w; i++) {
+      console.log("bottom start of computed", "i", idx, "b", b)
+      //let x
+      for (var i = 0; i < w; i++) { // start at index 0 or 1?
         if (this.bottomLine[idx + i].top < b) { // may need index out of bounds chekcing
           b = this.bottomLine[idx + i].top
-          x = idx + i
+          //x = idx + i
         }
       }
-      console.log("Bottom", "index", x, "val", b)
+      console.log("bottom end of computed", "index", idx, "val", b)
       return b 
     },
     activePieceY: function () {
@@ -200,12 +183,13 @@ export default {
     },
     quickDown: function () {
       let cols = this.getColHeight()
+      console.log("column heights", cols)
       let idx = (this.activePiece.pos.x) / 40
-      let start = this.bottomLine[idx]
+      //let start = this.bottomLine[idx]
       for (var i = 0; i < cols.length; i++) {
+        console.log(this.bottomLine[idx + i].top, cols[i], this.bottomLine[idx + i].top - cols[i])
         this.bottomLine[idx + i].top -= cols[i]
       }
-      console.log("column heights", cols)
       this.activePiece.pos.y = this.bottom //- this.pieceSize.h
     },
     setPositions: function (p) {
@@ -221,6 +205,7 @@ export default {
           c[idx] = 40
         }
       }
+      console.log("getColHeight", c)
       return c
     },
     adjustBottom: function (b) {

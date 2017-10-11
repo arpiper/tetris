@@ -33,8 +33,9 @@ export default {
         x = l / 40
         y = (760 - t) / 40
         n = x + (10 * y)
-        if (this.used_spaces.includes(n)) {
-          // console.log("piece overlap", n)
+        console.log("addPiece", piece, "y", y, "t", t)
+        if (this.used_spaces.includes(n) || y < 0) { // piece overlap or placed outside playarea
+          console.log("piece overlap", n)
           piece.pos.y -= 40
           conflict = true
           break
