@@ -33,9 +33,9 @@ export default {
         x = l / 40
         y = (760 - t) / 40
         n = x + (10 * y)
-        console.log("addPiece", piece, "y", y, "t", t)
+        //console.log("addPiece", piece, "y", y, "t", t)
         if (this.used_spaces.includes(n) || y < 0) { // piece overlap or placed outside playarea
-          console.log("piece overlap", n)
+          //console.log("piece overlap", n)
           piece.pos.y -= 40
           conflict = true
           break
@@ -66,7 +66,7 @@ export default {
       }
     },
     moveBlocksDown: function (b) {
-      console.log("moveBlocksDown", b)
+      //console.log("moveBlocksDown", b)
       let vm = this
       b.forEach(function (v,i) {
         let j = vm.blocks.indexOf(v)
@@ -82,7 +82,7 @@ export default {
     },
     clearRow: function (row, index) {
       let t = this.used_spaces.splice(index, 10)
-      console.log("clearrow", row, t)
+      // console.log("clearrow", row, t)
       let above = []
       for (var i = 0; i < this.blocks.length; i++) {
         if (t.includes(this.blocks[i].number)) {
@@ -93,11 +93,20 @@ export default {
         }
       }
       window.setTimeout(this.moveBlocksDown(above), 1000)
-    }
+    },
+    reset: function () {
+      //console.log("reset playedpieces")
+      this.blocks = []
+      this.used_spaces = []
+    },
   },
   watch: {
     pieces: function (value) {
-      this.addPiece(value[value.length - 1])
+      if (value.length !== 0) {
+        this.addPiece(value[value.length - 1])
+      } else {
+        this.reset()
+      }
     },
     used_spaces: function (value) {
       let count = 0
@@ -125,7 +134,7 @@ export default {
         }
         last = value[i]
       }
-      console.log("rows indices", rows, indices)
+      //console.log("rows indices", rows, indices)
       if (rows && indices && rows.length === indices.length) {
         for (i = 0; i < rows.length; i++) {
           this.clearRow(rows[i], indices[i])
@@ -133,6 +142,8 @@ export default {
       }
     },
   },
+  created () {
+  }
 }
 </script>
 

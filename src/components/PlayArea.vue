@@ -8,14 +8,16 @@
           :shape="nextPiece.shape">
         </piece>
       </div>
-      <div>
-        <span
-          v-for="(a,i) in bottomLine">
-          {{i}} - Left: {{ a.left }} x Top: {{ a.top }}<br />
-        </span>
-      </div>
-      <div>
-        {{ lastpiece }}
+      <div class="debugging" v-if="debug">
+        <div>
+          <span
+            v-for="(a,i) in bottomLine">
+            {{i}} - Left: {{ a.left }} x Top: {{ a.top }}<br />
+          </span>
+        </div>
+        <div>
+          {{ lastpiece }}
+        </div>
       </div>
       <div class="controls">
         <button class="start" @click="start">Start</button>
@@ -46,6 +48,7 @@ export default {
   },
   data () {
     return {
+      debug: false,
       activePiece: {},
       nextPiece: {},
       shapes: ["I", "O", "T", "S", "Z", "J", "L"],
@@ -235,7 +238,28 @@ export default {
     reset: function () {
       this.pieces = []
       this.activePiece = {}
-    }
+      //this.evtHub.$emit("reset_played_pieces")
+      this.bottomLine = [
+        {top: 800, left: 0},
+        {top: 800, left: 40},
+        {top: 800, left: 80},
+        {top: 800, left: 120},
+        {top: 800, left: 160},
+        {top: 800, left: 200},
+        {top: 800, left: 240},
+        {top: 800, left: 280},
+        {top: 800, left: 320},
+        {top: 800, left: 360},
+      ]
+      this.setup()
+    },
+    setup: function () {
+      let p = this.getPiece()
+      // set next piece to a deep copy of p.
+      //this.nextPiece = JSON.parse(JSON.stringify(p))
+      this.nextPiece = this.getPiece()
+      this.getNextPiece()
+    },
   },
   watch: {
     activePieceY: function (value) {
@@ -255,9 +279,9 @@ export default {
     this.evtHub.$on("adjust_bottom", this.adjustBottom)
     this.evtHub.$on("row_cleared", this.rowCleared)
     window.addEventListener("keydown", this.action)
-    let p = this.getPiece()
-    this.nextPiece = JSON.parse(JSON.stringify(p))
-    this.getNextPiece()
+    this.setup()
+    console.log(process.env.NODE_ENV)
+    console.log(this)
   },
   destroyed: function () {
     this.evtHub.$off()
@@ -292,10 +316,16 @@ export default {
   width: 200px;
   margin: 10px;
 }
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .controls button {
   width: 75px;
   height: 25px;
   margin-top: auto;
+  margin: 5px;
   font-weight: bold;
   background-color: #4caf50;
   border: 2px solid #4caf50;
